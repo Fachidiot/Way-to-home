@@ -3,12 +3,22 @@ guid: b2275f7810b8048baa33fe8691e0d67a
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Joints
+    second: {fileID: 2100000, guid: e6a6daf5110f14e26bc65986ddbe406b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Main
+    second: {fileID: 2100000, guid: e91937499afa847abbcc238dad412a73, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0

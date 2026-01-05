@@ -9,12 +9,12 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Player
+  - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Player
+  - Monster
+  - Interactable
   - 
   - 
   - 

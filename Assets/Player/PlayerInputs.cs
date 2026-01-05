@@ -7,6 +7,7 @@ public class PlayerInputs : MonoBehaviour
     public Vector2 move;
     public Vector2 look;
     public bool jump;
+    public bool crouch;
     public bool sprint;
 
     [Header("Movement Settings")]
@@ -39,6 +40,11 @@ public class PlayerInputs : MonoBehaviour
     {
         SprintInput(value.isPressed);
     }
+
+    public void OnCrouch(InputValue value)
+    {
+        CrouchInput();
+    }
 #endif
 
 
@@ -57,9 +63,18 @@ public class PlayerInputs : MonoBehaviour
         jump = newJumpState;
     }
 
-    public void SprintInput(bool newSprintState)
+    public void SprintInput(bool newSprintState)    // Default
     {
         sprint = newSprintState;
+        if (sprint)
+            crouch = false;
+    }
+
+    public void CrouchInput()   // Toggle
+    {
+        if (sprint)
+            return;
+        crouch = !crouch;
     }
 
     private void OnApplicationFocus(bool hasFocus)

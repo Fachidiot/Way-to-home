@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
+    [SerializeField] private bool growable;
     bool isGrounded;
     float maxSize = 3f;
     float minSize = 0.2f;
@@ -18,14 +19,17 @@ public class Ball : MonoBehaviour
     {
         Jump();
         // GroundCheck();
-        Increase();
+        if (growable)
+            Increase();
         // Decrease();
         Reset();
     }
 
-    void GroundCheck()
+    void OnGUI()
     {
-
+        GUILayout.BeginArea(new Rect(10, 10, 60, 30));
+        GUILayout.TextArea("Score: " + Coin.score.ToString());
+        GUILayout.EndArea();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -77,7 +81,11 @@ public class Ball : MonoBehaviour
         if (yDistance > 20)
         {
             transform.position = start;
-            GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            transform.rotation = Quaternion.identity;
+
+            var rigidbody = GetComponent<Rigidbody>();
+            rigidbody.linearVelocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
         }
     }
 }
