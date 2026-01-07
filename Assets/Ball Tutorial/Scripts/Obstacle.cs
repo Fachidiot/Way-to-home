@@ -21,7 +21,7 @@ public class Obstacle : MonoBehaviour
     void Update()
     {
         if (isMove)
-        {
+        {   // Ball Logic
             transform.localPosition = new Vector3(
                 transform.localPosition.x + delta,
                 transform.localPosition.y,
@@ -52,5 +52,7 @@ public class Obstacle : MonoBehaviour
             rigidbody.AddForce(direction.normalized * force);
         if (animator)
             animator.SetTrigger("collision");
+
+        Ball.combo++;
     }
 }

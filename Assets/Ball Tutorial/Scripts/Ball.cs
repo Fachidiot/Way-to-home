@@ -14,6 +14,8 @@ public class Ball : MonoBehaviour
     Vector3 startPos;
     Vector3 prevPosition;
     bool isStart = false;
+    float comboDelta;
+    public float comboTimeout = 2f;
 
     private void Start()
     {
@@ -42,6 +44,7 @@ public class Ball : MonoBehaviour
             // Decrease();
         }
         Reset();
+        Combo();
 
         if (WaytoHome)
             SceneManager.LoadScene("Stage1_Scene");
@@ -91,6 +94,28 @@ public class Ball : MonoBehaviour
         prevPosition = transform.position;
     }
 
+    int maxCombo = 0;
+    public static int combo = 0;
+    int prevCombo = 0;
+    void Combo()
+    {
+        if (prevCombo != combo)
+        {
+            prevCombo = combo;
+            comboDelta = comboTimeout;
+        }
+        else
+        {
+            if (combo != 0 && comboDelta <= 0f)
+            {
+                if (maxCombo < combo)
+                    maxCombo = combo;
+                combo = 0;
+            }
+            comboDelta -= Time.deltaTime;
+        }
+    }
+
     void Reset()
     {
         if (transform.localPosition.y < resetHeight)
@@ -102,6 +127,9 @@ public class Ball : MonoBehaviour
             rigidbody.linearVelocity = Vector3.zero;
             rigidbody.angularVelocity = Vector3.zero;
 
+            ground.ResetCoin();
+            combo = 0;
+
             if (Coin.best < Coin.score)
                 Coin.best = Coin.score;
             Coin.score = 0;
@@ -111,9 +139,14 @@ public class Ball : MonoBehaviour
     bool WaytoHome = false;
     void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(10, 10, 60, 60));
-        GUILayout.TextArea("Best : " + Coin.best.ToString());
-        GUILayout.TextArea("Score: " + Coin.score.ToString());
+        GUILayout.BeginArea(new Rect(10, 10, 150, 150));
+        GUILayout.TextArea("Best Coin : " + Coin.best.ToString());
+        GUILayout.TextArea("Coin Score: " + Coin.score.ToString());
+        GUILayout.EndArea();
+
+        GUILayout.BeginArea(new Rect(Screen.width - 160, 10, 150, 150));
+        GUILayout.TextArea("Best Combo : " + maxCombo.ToString());
+        GUILayout.TextArea("Combo Score: " + combo.ToString());
         GUILayout.EndArea();
 
         GUIStyle buttonstyle = new GUIStyle(GUI.skin.button);

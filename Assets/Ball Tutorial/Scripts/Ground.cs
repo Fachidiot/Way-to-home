@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
 public class Ground : MonoBehaviour
 {
+    public static Ground GroundInstance;
     public bool isBall;
     [SerializeField] private float maxAngle = 0.3f;
     [SerializeField] private float rotateSpeed = 5f;
@@ -18,25 +21,74 @@ public class Ground : MonoBehaviour
     [SerializeField] private Transform rightPos;
     Vector3 rightrot;
 
+    [SerializeField] private int specialCoinCount = 3;
+    int[] resetCoins;
+
     void Start()
     {
+        GroundInstance = this;
         leftrot = leftPos.localEulerAngles;
         rightrot = rightPos.localEulerAngles;
+        resetCoins = new int[specialCoinCount];
         CreateCoin();
     }
 
     private List<GameObject> coins;
 
+    List<GameObject> temp = new List<GameObject>();
     public void ResetCoin()
     {
-        if (coins.Count > 0)
+        if (temp != coins)
         {
             foreach (var go in coins)
             {
-                if (go.activeSelf)
+                if (go)
+                    temp.Add(go);
+            }
+            coins = temp;
+        }
+
+        if (coins.Count > 0)
+        {
+            for (int i = 0; i < resetCoins.Length; i++)
+                coins[resetCoins[i]].GetComponent<Coin>().resetable = false;
+
+            for (int i = 0; i < resetCoins.Length; i++)
+            {
+                resetCoins[i] = RandomInt(0, coins.Count, specialCoinCount);
+                coins[resetCoins[i]].GetComponent<Coin>().resetable = true;
+            }
+
+            foreach (var go in coins)
+            {
+                if (!go.activeSelf)
                     go.SetActive(true);
             }
         }
+    }
+
+    int[] randList;
+    int index = 0;
+    int RandomInt(int min, int max, int length)
+    {
+        if (randList == null || randList.Length != length || index + 1 >= length)
+        {
+            index = 0;
+            randList = new int[length];
+        }
+
+        int value = Random.Range(min, max);
+        while (true)
+        {
+            if (randList.Contains(value))
+                value = Random.Range(min, max);
+            else
+            {
+                randList[index++] = value;
+                break;
+            }
+        }
+        return value;
     }
 
     public void CreateCoin()
@@ -52,7 +104,6 @@ public class Ground : MonoBehaviour
                 coins.Add(go);
             }
         }
-
     }
 
     void Update()

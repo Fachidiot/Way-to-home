@@ -127,7 +127,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e799c2b3498046049a80357f1652643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  resetable: 0
   rotateSpeed: 60
   layerName:
     serializedVersion: 2
     m_Bits: 64
+  normalMaterial: {fileID: 2100000, guid: 21b86041e818c4f8287da3a71a0a4481, type: 2}
+  specialMaterial: {fileID: 2100000, guid: b76ff96cb37f64740bcbf499a4b59fdd, type: 2}
