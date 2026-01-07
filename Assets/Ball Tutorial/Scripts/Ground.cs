@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
 public class Ground : MonoBehaviour
@@ -33,37 +32,31 @@ public class Ground : MonoBehaviour
         CreateCoin();
     }
 
-    private List<GameObject> coins;
-
-    List<GameObject> temp = new List<GameObject>();
+    private List<GameObject> coins = new List<GameObject>();
     public void ResetCoin()
     {
-        if (temp != coins)
-        {
-            foreach (var go in coins)
-            {
-                if (go)
-                    temp.Add(go);
-            }
-            coins = temp;
-        }
-
         if (coins.Count > 0)
         {
-            for (int i = 0; i < resetCoins.Length; i++)
-                coins[resetCoins[i]].GetComponent<Coin>().resetable = false;
-
-            for (int i = 0; i < resetCoins.Length; i++)
-            {
-                resetCoins[i] = RandomInt(0, coins.Count, specialCoinCount);
-                coins[resetCoins[i]].GetComponent<Coin>().resetable = true;
-            }
-
             foreach (var go in coins)
             {
                 if (!go.activeSelf)
                     go.SetActive(true);
             }
+            RandomizeCoin();
+        }
+    }
+    void RandomizeCoin()
+    {
+        if (resetCoins[0] != resetCoins[1])
+        {   // Random인 상태. (초기상태 건너뜀)
+            for (int i = 0; i < resetCoins.Length; i++)
+                coins[resetCoins[i]].GetComponent<Coin>().resetable = false;
+        }
+
+        for (int i = 0; i < resetCoins.Length; i++)
+        {
+            resetCoins[i] = RandomInt(0, coins.Count, specialCoinCount);
+            coins[resetCoins[i]].GetComponent<Coin>().resetable = true;
         }
     }
 
@@ -99,11 +92,20 @@ public class Ground : MonoBehaviour
             for (float z = coinSpawnStartPosition.z; z < coinSpawnEndPosition.z; z += coinSpawnPadding)
             {
                 Vector3 spawnPos = new Vector3(x, coinSpawnStartPosition.y, z);
+
                 var go = Instantiate(coinPrefab, transform);
                 go.transform.localPosition = spawnPos;
-                coins.Add(go);
+                if (!Physics.CheckSphere(go.transform.position, 0.5f, LayerMask.GetMask("Default")))
+                {
+                    coins.Add(go);
+                }
+                else
+                {
+                    Destroy(go);
+                }
             }
         }
+        ResetCoin();
     }
 
     void Update()

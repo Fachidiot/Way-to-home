@@ -29,11 +29,11 @@ public class Coin : MonoBehaviour
 
     void Start()
     {
-        if (Physics.CheckSphere(transform.position, 0.4f, LayerMask.GetMask("Default")))
-        {
-            // Debug.Log($"맵과 충돌되는 코인 destroy");
-            Destroy(gameObject);
-        }
+        // if (Physics.CheckSphere(transform.position, 0.4f, LayerMask.GetMask("Default")))
+        // {
+        //     // Debug.Log($"맵과 충돌되는 코인 destroy");
+        //     Destroy(gameObject);
+        // }
 
         transform.localEulerAngles = new Vector3
         (

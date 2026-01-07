@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -118,7 +117,7 @@ public class Ball : MonoBehaviour
 
     void Reset()
     {
-        if (transform.localPosition.y < resetHeight)
+        if (transform.position.y < resetHeight)
         {
             transform.position = startPos;
             transform.rotation = Quaternion.identity;
