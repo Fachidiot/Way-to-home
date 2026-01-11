@@ -114,7 +114,8 @@ public class PlayerMovement : MonoBehaviour
         {
             horizontalVelocity = rawMoveDirection.normalized * currentSpeed;
 
-            quickTurnTimeoutDelta -= Time.deltaTime;
+            if (quickTurnTimeoutDelta > 0)
+                quickTurnTimeoutDelta -= Time.deltaTime;
         }
         prevVelocity = horizontalVelocity;
         Vector3 verticalVelocity = new Vector3(0, velocity.y, 0);
