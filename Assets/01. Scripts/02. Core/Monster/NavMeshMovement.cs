@@ -1,3 +1,4 @@
+using Data;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,6 +16,7 @@ public class NavMeshMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     private Vector3 destination;
+    private MonsterAnimationConfig animationConfig;
     private NavMeshAgent agent;
     private float targetSpeed;
     private float stoppingDistance;
@@ -26,6 +28,12 @@ public class NavMeshMovement : MonoBehaviour
         stoppingDistance = agent.stoppingDistance;
     }
 
+    public void SetUp(Animator animator, MonsterAnimationConfig animationConfig)
+    {
+        this.animator = animator;
+        this.animationConfig = animationConfig;
+    }
+
     void Update()
     {
         float currentSpeed = agent.speed;
@@ -34,7 +42,7 @@ public class NavMeshMovement : MonoBehaviour
         if (agent.enabled)
         {
             agent.speed = Mathf.MoveTowards(currentSpeed, targetSpeed, Time.deltaTime * rate);
-            animator.SetFloat("speed", agent.velocity.magnitude);
+            animator.SetFloat(animationConfig.moveSpeedFloat, agent.velocity.magnitude);
         }
         else
             SimulateLODMovement();

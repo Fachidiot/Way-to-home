@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Data;
 
-public class MonsterHealth : MonoBehaviour
+public class MonsterHealth : MonoBehaviour, IDamagable
 {
     #region Properties
     [Header("Realtime Health State")]
@@ -41,7 +41,7 @@ public class MonsterHealth : MonoBehaviour
         isDead = false;
     }
 
-    public void TakeDamage(float damage)
+    public void OnDamage(float damage)
     {
         if (isDead) return;
 

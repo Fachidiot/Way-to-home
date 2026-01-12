@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35248edac9188604bbf9e6491abf43bc, type: 3}
   m_Name: Normal Zombie AnimationConfig
   m_EditorClassIdentifier: Assembly-CSharp::Data.MonsterAnimationConfig
-  moveSpeedFloat: Locomotion
+  moveSpeedFloat: Speed
   idleTypeInt: IdleType
-  isWalkingBool: Patrol
-  isRunningBool: Trace
+  actionBool: Ground
   actionTrigger1: Attack1
   actionTrigger2: Attack2
   actionTrigger3: Attack3

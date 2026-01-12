@@ -226,7 +226,7 @@ public class MonsterSensor : MonoBehaviour
             PlayerInputs playerInputs;
             if (target.TryGetComponent<PlayerInputs>(out playerInputs))
             {
-                if (playerInputs.crouch)
+                if (playerInputs.crouch || playerInputs.move == Vector2.zero)
                     return false;
             }
             isOnHeard = true;

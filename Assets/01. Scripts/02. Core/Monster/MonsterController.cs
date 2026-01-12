@@ -15,7 +15,7 @@ public class MonsterController : MonoBehaviour
     public MonsterConfig Config { get { return config; } }
 
     [Header("Animation Hash Settings")]
-    [SerializeField] private MonsterAnimationConfig animConfig;
+    [SerializeField] private MonsterAnimationConfig animationConfig;
 
     public BaseState<MonsterController> CurrentState { get; private set; }
     public BaseStateMachine stateMachine { get; private set; }
@@ -69,6 +69,8 @@ public class MonsterController : MonoBehaviour
         {   // Host인 경우 : (Singleplayer도 포함되어있습니다.)
             health.OnHit.AddListener(HandleHit);
             health.OnDeath.AddListener(HandleHit);
+
+            movement.SetUp(animator, animationConfig);
         }
         ChangeState(stateMachine.IdleState);
     }
@@ -181,7 +183,7 @@ public class MonsterController : MonoBehaviour
 
         StopAllCoroutines();
 
-        if (!string.IsNullOrEmpty(animConfig.dieTrigger1))
+        if (!string.IsNullOrEmpty(animationConfig.dieTrigger1))
             SetAnimTrigger(hashDie);
 
         ChangeState(stateMachine.DieState);
@@ -203,29 +205,22 @@ public class MonsterController : MonoBehaviour
 
     #region Animation Wrapper
     public int hashMoveSpeed { get; private set; }
-    public int hashIsWalking { get; private set; }
-    public int hashIsRunning { get; private set; }
     public int hashAttack1 { get; private set; }
     public int hashAttack2 { get; private set; }
     public int hashAttack3 { get; private set; }
     public int hashAttack4 { get; private set; }
     public int hashHit { get; private set; }
     public int hashDie { get; private set; }
-    public int hashEat { get; private set; }
-    public int hashPoo { get; private set; }
-    public int hashSleep { get; private set; }
 
     void InitializeAnimationHashes()
     {
-        hashMoveSpeed = Animator.StringToHash(animConfig.moveSpeedFloat);
-        hashIsWalking = Animator.StringToHash(animConfig.isWalkingBool);
-        hashIsRunning = Animator.StringToHash(animConfig.isRunningBool);
-        hashAttack1 = Animator.StringToHash(animConfig.actionTrigger1);
-        hashAttack2 = Animator.StringToHash(animConfig.actionTrigger2);
-        hashAttack3 = Animator.StringToHash(animConfig.actionTrigger3);
-        hashAttack4 = Animator.StringToHash(animConfig.actionTrigger4);
-        hashHit = Animator.StringToHash(animConfig.hitTrigger1);
-        hashDie = Animator.StringToHash(animConfig.dieTrigger1);
+        hashMoveSpeed = Animator.StringToHash(animationConfig.moveSpeedFloat);
+        hashAttack1 = Animator.StringToHash(animationConfig.actionTrigger1);
+        hashAttack2 = Animator.StringToHash(animationConfig.actionTrigger2);
+        hashAttack3 = Animator.StringToHash(animationConfig.actionTrigger3);
+        hashAttack4 = Animator.StringToHash(animationConfig.actionTrigger4);
+        hashHit = Animator.StringToHash(animationConfig.hitTrigger1);
+        hashDie = Animator.StringToHash(animationConfig.dieTrigger1);
     }
 
     public void SetAnimBool(int animHash, bool value)
