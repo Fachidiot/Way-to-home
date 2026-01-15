@@ -67,8 +67,8 @@ public class MonsterController : MonoBehaviour
         }
         else
         {   // Host인 경우 : (Singleplayer도 포함되어있습니다.)
-            health.OnHit.AddListener(HandleHit);
-            health.OnDeath.AddListener(HandleHit);
+            health.OnHit += HandleHit;
+            health.OnDeath += HandleDeath;
 
             movement.SetUp(animator, animationConfig);
         }
@@ -77,7 +77,7 @@ public class MonsterController : MonoBehaviour
     void OnDisable()
     {
         if (health)
-            health.OnHit.RemoveAllListeners();
+            health.OnHit -= HandleHit;
     }
 
     void Update()

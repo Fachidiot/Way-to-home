@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.Events;
 using Data;
+using System;
 
 public class MonsterHealth : MonoBehaviour, IDamagable
 {
@@ -16,9 +16,9 @@ public class MonsterHealth : MonoBehaviour, IDamagable
     public bool IsDead { get { return isDead; } }
     public int hitCounter { get; private set; } = 0;
 
-    [HideInInspector] public UnityEvent OnHit;
-    [HideInInspector] public UnityEvent OnDeath;
-    public System.Action<float> OnHealthChanged;
+    [HideInInspector] public Action OnHit;
+    [HideInInspector] public Action OnDeath;
+    public Action<float> OnHealthChanged;
 
     private float hitTimer = 0;
     #endregion
@@ -73,10 +73,10 @@ public class MonsterHealth : MonoBehaviour, IDamagable
             groundY = hit.point.y;
 
         float dropRate = 0.2f;
-        if (Random.Range(0, 100) <= dropRate)
+        if (UnityEngine.Random.Range(0, 100) <= dropRate)
         {
             float scatterDistance = 1.0f;
-            Vector2 randomCircle = Random.insideUnitCircle * scatterDistance;
+            Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * scatterDistance;
             Vector3 spawnPos = transform.position + new Vector3(randomCircle.x, 0, randomCircle.y);
             spawnPos.y = groundY + 0.5f;
 

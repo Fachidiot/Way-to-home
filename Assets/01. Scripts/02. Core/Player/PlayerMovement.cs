@@ -1,40 +1,20 @@
+using Data;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Components")]
-    [Tooltip("모델읠 Transform의 rotation을 회전시켜줍니다.")]
+    [Tooltip("모델링 Transform의 rotation을 회전시켜줍니다.")]
     [SerializeField] private Transform model;
-    private Animator animator;
+    [Header("Config")]
+    [SerializeField] private PlayerMovementConfig config;
 
-    [Header("Player Settings")]
-    [Header("Speed Settings")]
-    [SerializeField] private float crouchSpeed = 0.5f;
-    [SerializeField] private float walkSpeed = 1f;
-    [SerializeField] private float sprintSpeed = 5f;
-    [SerializeField] private float acceleration = 0.1f;
-    [SerializeField] private float currentSpeed;
+    private Animator animator;
     private bool isGrounded;
     private bool isCrouched;
     private bool isSprint;
-
-    [Header("Rotate Settings")]
-    [SerializeField] private float rotateSpeed = 5f;
-    [SerializeField] private float quickTurnMinAngle = 135f;
-    [SerializeField] private float quickTurnTimeout = 0.50f;
-    [SerializeField] private float quickTurnTimeoutDelta;
-
-    [Header("Jump And Gravity")]
-    [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private float groundOffset = -0.14f;
-    [SerializeField] private float groundCheckSphereRadius = 0.1f;
-    [SerializeField] private float jumpHeight = 1f;
-    [SerializeField] private float gravity = -9.81f;
-    [SerializeField] private float jumpTimeout = 1.50f;
+    private float currentSpeed;
     private float jumpTimeoutDelta;
-
-    [Header("Colider values")]
-    [SerializeField] private float crouchColliderHeight = 1f;
     private float normalColliderHeight;
 
     [SerializeField] private bool debug = false;
@@ -69,8 +49,8 @@ public class PlayerMovement : MonoBehaviour
 
     void GroundCheck()
     {
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + groundOffset, transform.position.z);
-        isGrounded = Physics.CheckSphere(spherePosition, groundCheckSphereRadius, groundLayers, QueryTriggerInteraction.Ignore);
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + config.groundOffset, transform.position.z);
+        isGrounded = Physics.CheckSphere(spherePosition, config.groundCheckSphereRadius, config.groundLayers, QueryTriggerInteraction.Ignore);
 
         animator.SetBool("isGrounded", isGrounded);
     }
@@ -99,28 +79,28 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalVelocity;
         if (Vector3.zero != prevVelocity && BodyTurn())
         {
-            if (isGrounded && currentSpeed > (walkSpeed + 0.5) && quickTurnTimeoutDelta <= 0.0f)
+            if (isGrounded && currentSpeed > (config.walkSpeed + 0.5) && config.quickTurnTimeoutDelta <= 0.0f)
             {   // 달리는 상태 + Quicktrun 상태라면 Animation 재생
                 animator.SetTrigger("sprintTurnRight");
-                quickTurnTimeoutDelta = quickTurnTimeout;
+                config.quickTurnTimeoutDelta = config.quickTurnTimeout;
             }
 
             // 이전 속도 -> 천천히 감속해준다.
             currentSpeed = Mathf.Lerp(0, currentSpeed, Time.deltaTime * 5);
             // 감속된 속도에서 이동 방향으로의 보정.
-            horizontalVelocity = Vector3.Lerp(prevVelocity, rawMoveDirection.normalized * currentSpeed, acceleration * Time.deltaTime);
+            horizontalVelocity = Vector3.Lerp(prevVelocity, rawMoveDirection.normalized * currentSpeed, config.acceleration * Time.deltaTime);
         }
         else
         {
             horizontalVelocity = rawMoveDirection.normalized * currentSpeed;
 
-            if (quickTurnTimeoutDelta > 0)
-                quickTurnTimeoutDelta -= Time.deltaTime;
+            if (config.quickTurnTimeoutDelta > 0)
+                config.quickTurnTimeoutDelta -= Time.deltaTime;
         }
         prevVelocity = horizontalVelocity;
         Vector3 verticalVelocity = new Vector3(0, velocity.y, 0);
 
-        if (isGrounded && verticalVelocity.y > gravity * Time.deltaTime)
+        if (isGrounded && verticalVelocity.y > config.gravity * Time.deltaTime)
         {   // isGrounded일 때는 중력을 계속 적용하여 경사면에서 뜨지 않도록 함
             verticalVelocity.y = -2f;
         }
@@ -138,18 +118,18 @@ public class PlayerMovement : MonoBehaviour
         var direction = new Vector3(playerInput.move.x, 0, playerInput.move.y);
         float angle = Vector3.Angle(model.forward, direction);
 
-        if (isSprint && angle > quickTurnMinAngle)
+        if (isSprint && angle > config.quickTurnMinAngle)
         {
             // Debug.Log($"{angle} > {quickTurnMinAngle}");
             quickTurn = true;
         }
-        if (!isSprint && !isCrouched && angle > quickTurnMinAngle)
+        if (!isSprint && !isCrouched && angle > config.quickTurnMinAngle)
         {
             // TODO: walk Degreeturn Animation
             quickTurn = true;
         }
-        if (isGrounded && Vector3.zero != direction && angle > quickTurnMinAngle - 10)
-            model.forward = Vector3.Lerp(model.forward, direction, Time.deltaTime * rotateSpeed * 2);
+        if (isGrounded && Vector3.zero != direction && angle > config.quickTurnMinAngle - 10)
+            model.forward = Vector3.Lerp(model.forward, direction, Time.deltaTime * config.rotateSpeed * 2);
         return quickTurn;
     }
 
@@ -165,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
             // Jump
             if (isGrounded && playerInput.jump && jumpTimeoutDelta <= 0.0f)
             {
-                velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+                velocity.y = Mathf.Sqrt(config.jumpHeight * -2 * config.gravity);
 
                 animator.SetBool("isJump", true);
             }
@@ -175,8 +155,8 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {   // On Air
-            jumpTimeoutDelta = jumpTimeout;
-            velocity.y += gravity * Time.deltaTime;
+            jumpTimeoutDelta = config.jumpTimeout;
+            velocity.y += config.gravity * Time.deltaTime;
 
             playerInput.jump = false;
         }
@@ -190,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         var direction = new Vector3(playerInput.move.x, 0, playerInput.move.y);
         if (Vector3.zero != direction)
-            model.forward = Vector3.Lerp(model.forward, direction, Time.deltaTime * rotateSpeed);
+            model.forward = Vector3.Lerp(model.forward, direction, Time.deltaTime * config.rotateSpeed);
     }
 
     private float SpeedChange(bool isMoving)
@@ -202,7 +182,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("isCrouch", isCrouched);
 
         if (isCrouched)
-            controller.height = crouchColliderHeight;
+            controller.height = config.crouchColliderHeight;
         else
             controller.height = normalColliderHeight;
 
@@ -211,7 +191,7 @@ public class PlayerMovement : MonoBehaviour
             controller.height / 2 + 0.05f,
             controller.center.z);
 
-        return isMoving ? (isSprint ? sprintSpeed : (isCrouched ? crouchSpeed : walkSpeed)) : 0;
+        return isMoving ? (isSprint ? config.sprintSpeed : (isCrouched ? config.crouchSpeed : config.walkSpeed)) : 0;
     }
 
     private void OnDrawGizmos()
@@ -219,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
         if (!debug)
             return;
 
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + groundOffset, transform.position.z);
-        Gizmos.DrawSphere(spherePosition, groundCheckSphereRadius);
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + config.groundOffset, transform.position.z);
+        Gizmos.DrawSphere(spherePosition, config.groundCheckSphereRadius);
     }
 }

@@ -5,9 +5,6 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class NavMeshMovement : MonoBehaviour
 {
-    [Header("Components")]
-    [SerializeField] private Animator animator;
-
     [Header("Accel & Decel Settings")]
     [SerializeField] private float accelerationRate = 5f;
     [SerializeField] private float decelerationRate = 10f;
@@ -15,6 +12,7 @@ public class NavMeshMovement : MonoBehaviour
     [Header("LOD Settings")]
     [SerializeField] private LayerMask groundLayer;
 
+    private Animator animator;
     private Vector3 destination;
     private MonsterAnimationConfig animationConfig;
     private NavMeshAgent agent;
