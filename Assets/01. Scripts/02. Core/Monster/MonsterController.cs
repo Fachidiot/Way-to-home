@@ -1,4 +1,5 @@
 using System.Collections;
+using AIStates;
 using Data;
 using UnityEngine;
 using UnityEngine.AI;
@@ -131,13 +132,18 @@ public class MonsterController : MonoBehaviour
     {
         float distance = Random.Range(config.patrolMinRadius, config.patrolMaxRadius);
         Vector3 randDirection = Random.onUnitSphere * distance;
-        randDirection.y = 0;
-        Vector3 destination = transform.position + randDirection;
 
-        // 도착지가 갈수 있는곳인지 raycast확인
-        if (Physics.Raycast(destination + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f))
-            return hit.point;
-        return destination;
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randDirection + transform.position, out hit, distance, NavMesh.AllAreas);
+        return hit.position;
+
+        // randDirection.y = 0;
+        // Vector3 destination = transform.position + randDirection;
+
+        // // 도착지가 갈수 있는곳인지 raycast확인
+        // if (Physics.Raycast(destination + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 10f))
+        //     return hit.point;
+        // return destination;
     }
     #endregion
 

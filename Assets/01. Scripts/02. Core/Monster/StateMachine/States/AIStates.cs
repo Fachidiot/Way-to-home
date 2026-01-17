@@ -206,7 +206,7 @@ namespace AIStates
             Debug.Log($"{monster.name} Hit");
             timer = 0f;
             if (monster.TryGetComponent<NavMeshAgent>(out var agent))
-                agent.speed = monster.Config.runSpeed * 0.3f;
+                agent.speed = agent.speed * 0.5f;
         }
 
         public override void ExitState(MonsterController monster) { }

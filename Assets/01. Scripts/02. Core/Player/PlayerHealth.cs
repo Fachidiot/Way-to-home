@@ -1,11 +1,14 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour, IDamagable
 {
     #region Properties
     [Header("Health Config")]
     [SerializeField] private PlayerStats playerStats;
+    [Header("UI")]
+    [SerializeField] private Slider healthSlider;
     [Header("Realtime Health State")]
     [SerializeField] private float maxHealth;
     [SerializeField] private float defense;
