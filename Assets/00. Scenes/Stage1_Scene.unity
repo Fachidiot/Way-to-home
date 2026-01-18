@@ -7484,8 +7484,8 @@ Transform:
   m_GameObject: {fileID: 418549688}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 19, y: 1.5, z: 4}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 19, y: 1.74, z: 4}
+  m_LocalScale: {x: 1.5, y: 1.75, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 660553178}
@@ -14376,7 +14376,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1970904371}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1001 &802918929
 PrefabInstance:
@@ -21392,8 +21392,8 @@ Transform:
   m_GameObject: {fileID: 1174727443}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: 1.5, z: 4}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 3, y: 1.74, z: 4}
+  m_LocalScale: {x: 1.5, y: 1.75, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 660553178}
@@ -22389,8 +22389,8 @@ Transform:
   m_GameObject: {fileID: 1232072537}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11, y: 1.5, z: 4}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalPosition: {x: 11, y: 1.74, z: 4}
+  m_LocalScale: {x: 1.5, y: 1.75, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 660553178}
@@ -36088,7 +36088,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1970904371}
   m_Layer: 0
-  m_Name: Test Map Design
+  m_Name: Subway Map Design
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36107,6 +36107,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 801147981}
   - {fileID: 735898054}
   - {fileID: 696667448}
   - {fileID: 660553178}
@@ -39901,4 +39902,3 @@ SceneRoots:
   - {fileID: 969248308}
   - {fileID: 883857606624314592}
   - {fileID: 2759036819287244037}
-  - {fileID: 801147981}
