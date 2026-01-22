@@ -1,11 +1,9 @@
 using Data;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Components")]
-    [Tooltip("모델링 Transform의 rotation을 회전시켜줍니다.")]
-    [SerializeField] private Transform model;
     [Header("Config")]
     [SerializeField] private PlayerMovementConfig config;
 
@@ -28,8 +26,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        playerInput = GetComponent<PlayerInputs>();
-        animator = model.GetComponent<Animator>();
+        playerInput = GameManager.Instance.GetComponent<PlayerInputs>();
+        animator = GetComponentInChildren<Animator>();
 
         normalColliderHeight = controller.height;
     }
@@ -58,26 +56,30 @@ public class PlayerMovement : MonoBehaviour
     void Move()
     {
         // 방향 계산
-        Vector2 direction;
+        Vector2 rawdirection;
         if (isGrounded)
-            direction = new Vector2(playerInput.move.x, playerInput.move.y);
+            rawdirection = new Vector2(playerInput.move.x, playerInput.move.y);
         else
-            direction = new Vector2(prevVelocity.x, prevVelocity.z);
+            rawdirection = new Vector2(prevVelocity.x, prevVelocity.z);
+        Vector2 direction = new Vector2(0, math.abs(playerInput.move.x) + math.abs(playerInput.move.y));
 
-        var isMoving = direction.magnitude > 0;
+        var isMoving = rawdirection.magnitude > 0;
 
         // targetSpeed 계산
         var targetSpeed = SpeedChange(isMoving);
         currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, Time.deltaTime * 5);
 
         // velocity 계산
-        Quaternion moveForward = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);  // TODO : 추후 이놈 때문에 transform.rotation을 회전시켰을때 이동이 이상해지는지 확인해주세요.
-        Vector3 rawMoveDirection = (moveForward * Vector3.forward * direction.y)
+        Quaternion moveForward = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);  // TODO : 추후 이놈 때문에 transform.rotation을 회전시켰을때 이동이 이상해지는지 확인해주세요
+        Vector3 rawMoveDirection = (moveForward * Vector3.forward * rawdirection.y)
+                                + (moveForward * Vector3.right * rawdirection.x);
+        Vector3 forwardDirection = (moveForward * Vector3.forward * direction.y)
                                 + (moveForward * Vector3.right * direction.x);
 
         // 이전 velocity에서의 Turn Anlge이 quick상태라면 quickturn을 실행 및 가속도 적용.
+        Vector3 rawhorizontalVelocity;
         Vector3 horizontalVelocity;
-        if (Vector3.zero != prevVelocity && BodyTurn())
+        if (Vector3.zero != prevVelocity && QuickTurn())
         {
             if (isGrounded && currentSpeed > (config.walkSpeed + 0.5) && config.quickTurnTimeoutDelta <= 0.0f)
             {   // 달리는 상태 + Quicktrun 상태라면 Animation 재생
@@ -88,16 +90,18 @@ public class PlayerMovement : MonoBehaviour
             // 이전 속도 -> 천천히 감속해준다.
             currentSpeed = Mathf.Lerp(0, currentSpeed, Time.deltaTime * 5);
             // 감속된 속도에서 이동 방향으로의 보정.
-            horizontalVelocity = Vector3.Lerp(prevVelocity, rawMoveDirection.normalized * currentSpeed, config.acceleration * Time.deltaTime);
+            rawhorizontalVelocity = Vector3.Lerp(prevVelocity, rawMoveDirection.normalized * currentSpeed, config.acceleration * Time.deltaTime);
+            horizontalVelocity = Vector3.Lerp(prevVelocity, forwardDirection.normalized * currentSpeed, config.acceleration * Time.deltaTime);
         }
         else
         {
-            horizontalVelocity = rawMoveDirection.normalized * currentSpeed;
+            rawhorizontalVelocity = rawMoveDirection.normalized * currentSpeed;
+            horizontalVelocity = forwardDirection.normalized * currentSpeed;
 
             if (config.quickTurnTimeoutDelta > 0)
                 config.quickTurnTimeoutDelta -= Time.deltaTime;
         }
-        prevVelocity = horizontalVelocity;
+        prevVelocity = rawhorizontalVelocity;
         Vector3 verticalVelocity = new Vector3(0, velocity.y, 0);
 
         if (isGrounded && verticalVelocity.y > config.gravity * Time.deltaTime)
@@ -107,16 +111,16 @@ public class PlayerMovement : MonoBehaviour
         velocity = horizontalVelocity + verticalVelocity;
 
         controller.Move(velocity * Time.deltaTime);
-        animator.SetFloat("velocity", direction.magnitude);
+        animator.SetFloat("velocity", rawdirection.magnitude);
     }
 
-    bool BodyTurn()
+    bool QuickTurn()
     {
         // Player가 가는 방향 : model의 forward방향에서 현재 direction과의 angle구하기.
         // angle이 quickturnAngle값보다 크다면 animation 실행.
         bool quickTurn = false;
         var direction = new Vector3(playerInput.move.x, 0, playerInput.move.y);
-        float angle = Vector3.Angle(model.forward, direction);
+        float angle = Vector3.Angle(transform.forward, direction);
 
         if (isSprint && angle > config.quickTurnMinAngle)
         {
@@ -129,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
             quickTurn = true;
         }
         if (isGrounded && Vector3.zero != direction && angle > config.quickTurnMinAngle - 10)
-            model.forward = Vector3.Lerp(model.forward, direction, Time.deltaTime * config.rotateSpeed * 2);
+            transform.forward = Vector3.Lerp(transform.forward, direction, Time.deltaTime * config.rotateSpeed * 2);
         return quickTurn;
     }
 
@@ -170,7 +174,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         var direction = new Vector3(playerInput.move.x, 0, playerInput.move.y);
         if (Vector3.zero != direction)
-            model.forward = Vector3.Lerp(model.forward, direction, Time.deltaTime * config.rotateSpeed);
+            transform.forward = Vector3.Lerp(transform.forward, direction, Time.deltaTime * config.rotateSpeed);
     }
 
     private float SpeedChange(bool isMoving)
@@ -180,6 +184,9 @@ public class PlayerMovement : MonoBehaviour
 
         isCrouched = playerInput.crouch && !playerInput.sprint;
         animator.SetBool("isCrouch", isCrouched);
+
+        /// TODO : 추후 성능에 문제가 있다면 확인.
+        GameManager.Instance.SetMainAnimation(isSprint, isCrouched);
 
         if (isCrouched)
             controller.height = config.crouchColliderHeight;

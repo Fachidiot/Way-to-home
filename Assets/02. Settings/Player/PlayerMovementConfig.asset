@@ -19,7 +19,7 @@ MonoBehaviour:
   rotateSpeed: 15
   quickTurnMinAngle: 178
   quickTurnTimeout: 0.5
-  quickTurnTimeoutDelta: -0.004790602
+  quickTurnTimeoutDelta: -0.000017266255
   groundLayers:
     serializedVersion: 2
     m_Bits: 9

@@ -9,6 +9,7 @@ public class PlayerInputs : MonoBehaviour
     public bool jump;
     public bool crouch;
     public bool sprint;
+    public bool change;
 
     [Header("Movement Settings")]
     public bool analogMovement;
@@ -45,6 +46,11 @@ public class PlayerInputs : MonoBehaviour
     {
         CrouchInput();
     }
+
+    public void OnChange(InputValue value)
+    {
+        ChangeInput(value.isPressed);
+    }
 #endif
 
 
@@ -75,6 +81,11 @@ public class PlayerInputs : MonoBehaviour
         if (sprint)
             return;
         crouch = !crouch;
+    }
+
+    public void ChangeInput(bool newChangeState)
+    {
+        change = newChangeState;
     }
 
     private void OnApplicationFocus(bool hasFocus)
