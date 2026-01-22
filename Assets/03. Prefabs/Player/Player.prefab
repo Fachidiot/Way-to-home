@@ -316,24 +316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   model: {fileID: 8553470939585546811}
-  crouchSpeed: 0.5
-  walkSpeed: 1
-  sprintSpeed: 3
-  acceleration: 0.1
-  currentSpeed: 0
-  rotateSpeed: 15
-  quickTurnMinAngle: 178
-  quickTurnTimeout: 0.5
-  quickTurnTimeoutDelta: 0
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  groundOffset: 0
-  groundCheckSphereRadius: 0.25
-  jumpHeight: 1
-  gravity: -9.81
-  jumpTimeout: 1.4
-  crouchColliderHeight: 1
+  config: {fileID: 11400000, guid: 94defa33324a74fa6b40ed2cfb72f724, type: 2}
   debug: 0
 --- !u!1 &1062483659306387640
 GameObject:
