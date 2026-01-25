@@ -1,4 +1,5 @@
 using Data;
+using NUnit.Framework;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementConfig config;
 
     private Animator animator;
-    private bool isGrounded;
+    [SerializeField] private bool isGrounded;
     private bool isCrouched;
     private bool isSprint;
     private float currentSpeed;
@@ -70,14 +71,12 @@ public class PlayerMovement : MonoBehaviour
         currentSpeed = Mathf.Lerp(currentSpeed, targetSpeed, Time.deltaTime * 5);
 
         // velocity 계산
-        Quaternion moveForward = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);  // TODO : 추후 이놈 때문에 transform.rotation을 회전시켰을때 이동이 이상해지는지 확인해주세요
-        Vector3 rawMoveDirection = (moveForward * Vector3.forward * rawdirection.y)
-                                + (moveForward * Vector3.right * rawdirection.x);
+        Quaternion moveForward = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+        // TODO : 추후 이놈 때문에 transform.rotation을 회전시켰을때 이동이 이상해지는지 확인해주세요
         Vector3 forwardDirection = (moveForward * Vector3.forward * direction.y)
                                 + (moveForward * Vector3.right * direction.x);
 
         // 이전 velocity에서의 Turn Anlge이 quick상태라면 quickturn을 실행 및 가속도 적용.
-        Vector3 rawhorizontalVelocity;
         Vector3 horizontalVelocity;
         if (Vector3.zero != prevVelocity && QuickTurn())
         {
@@ -90,25 +89,28 @@ public class PlayerMovement : MonoBehaviour
             // 이전 속도 -> 천천히 감속해준다.
             currentSpeed = Mathf.Lerp(0, currentSpeed, Time.deltaTime * 5);
             // 감속된 속도에서 이동 방향으로의 보정.
-            rawhorizontalVelocity = Vector3.Lerp(prevVelocity, rawMoveDirection.normalized * currentSpeed, config.acceleration * Time.deltaTime);
             horizontalVelocity = Vector3.Lerp(prevVelocity, forwardDirection.normalized * currentSpeed, config.acceleration * Time.deltaTime);
         }
         else
         {
-            rawhorizontalVelocity = rawMoveDirection.normalized * currentSpeed;
             horizontalVelocity = forwardDirection.normalized * currentSpeed;
 
             if (config.quickTurnTimeoutDelta > 0)
                 config.quickTurnTimeoutDelta -= Time.deltaTime;
         }
-        prevVelocity = rawhorizontalVelocity;
+        if (isGrounded)
+            prevVelocity = horizontalVelocity;
         Vector3 verticalVelocity = new Vector3(0, velocity.y, 0);
 
         if (isGrounded && verticalVelocity.y > config.gravity * Time.deltaTime)
         {   // isGrounded일 때는 중력을 계속 적용하여 경사면에서 뜨지 않도록 함
             verticalVelocity.y = -2f;
         }
-        velocity = horizontalVelocity + verticalVelocity;
+
+        if (isGrounded)
+            velocity = horizontalVelocity + verticalVelocity;
+        else
+            velocity = prevVelocity + verticalVelocity;
 
         controller.Move(velocity * Time.deltaTime);
         animator.SetFloat("velocity", rawdirection.magnitude);
