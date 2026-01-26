@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,7 +10,13 @@ public class PlayerInputs : MonoBehaviour
     public bool jump;
     public bool crouch;
     public bool sprint;
+    public bool interact;
+    public bool interactFocus;
+    [HideInInspector]
+    public InputAction interactValue;
     public bool change;
+
+    public bool escape;
 
     [Header("Movement Settings")]
     public bool analogMovement;
@@ -17,6 +24,11 @@ public class PlayerInputs : MonoBehaviour
     [Header("Mouse Cursor Settings")]
     public bool cursorLocked = true;
     public bool cursorInputForLook = true;
+
+    void OnEnable()
+    {
+        interactValue = GetComponent<PlayerInput>().actions.FindAction("Interact");
+    }
 
 #if ENABLE_INPUT_SYSTEM
     public void OnMove(InputValue value)
@@ -34,6 +46,7 @@ public class PlayerInputs : MonoBehaviour
 
     public void OnJump(InputValue value)
     {
+        if (interactFocus) return;
         JumpInput(value.isPressed);
     }
 
@@ -44,19 +57,34 @@ public class PlayerInputs : MonoBehaviour
 
     public void OnCrouch(InputValue value)
     {
+        if (interactFocus) return;
         CrouchInput();
+    }
+
+    public void OnInteract(InputValue value)
+    {
+        InteractInput(value.isPressed);
     }
 
     public void OnChange(InputValue value)
     {
+        if (interactFocus) return;
         ChangeInput(value.isPressed);
+    }
+
+    public void OnEscape(InputValue value)
+    {
+        EscapeInput(value.isPressed);
     }
 #endif
 
 
     public void MoveInput(Vector2 newMoveDirection)
     {
-        move = newMoveDirection;
+        if (interactFocus)
+            move = Vector2.zero;
+        else
+            move = newMoveDirection;
     }
 
     public void LookInput(Vector2 newLookDirection)
@@ -66,7 +94,10 @@ public class PlayerInputs : MonoBehaviour
 
     public void JumpInput(bool newJumpState)
     {
-        jump = newJumpState;
+        if (crouch)
+            crouch = false;
+        else
+            jump = newJumpState;
     }
 
     public void SprintInput(bool newSprintState)    // Default
@@ -74,6 +105,11 @@ public class PlayerInputs : MonoBehaviour
         sprint = newSprintState;
         if (sprint)
             crouch = false;
+    }
+
+    public void InteractInput(bool newInteractState)
+    {
+        interact = newInteractState;
     }
 
     public void CrouchInput()   // Toggle
@@ -86,6 +122,11 @@ public class PlayerInputs : MonoBehaviour
     public void ChangeInput(bool newChangeState)
     {
         change = newChangeState;
+    }
+
+    private void EscapeInput(bool newEscapeState)
+    {
+        escape = newEscapeState;
     }
 
     private void OnApplicationFocus(bool hasFocus)
