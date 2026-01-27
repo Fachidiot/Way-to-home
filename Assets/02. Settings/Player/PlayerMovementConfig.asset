@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Data.PlayerMovementConfig
   crouchSpeed: 0.5
   walkSpeed: 1
-  sprintSpeed: 3
+  sprintSpeed: 2
   acceleration: 0.1
   rotateSpeed: 15
   quickTurnMinAngle: 178
   quickTurnTimeout: 0.5
-  quickTurnTimeoutDelta: -0.00193995
+  quickTurnTimeoutDelta: -0.0005401175
   groundLayers:
     serializedVersion: 2
     m_Bits: 9
